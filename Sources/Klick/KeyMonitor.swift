@@ -7,6 +7,7 @@ class KeyMonitor {
     private var runLoopSource: CFRunLoopSource?
     private var pressedModifiers = Set<UInt16>()
     private let audioEngine: AudioEngine
+    var mouseEnabled = true
 
     init(audioEngine: AudioEngine) {
         self.audioEngine = audioEngine
@@ -18,10 +19,15 @@ class KeyMonitor {
     }
 
     func start() -> Bool {
-        let eventMask: CGEventMask =
-            (1 << CGEventType.keyDown.rawValue)
-            | (1 << CGEventType.keyUp.rawValue)
-            | (1 << CGEventType.flagsChanged.rawValue)
+        var eventMask: CGEventMask = 0
+        for type: CGEventType in [
+            .keyDown, .keyUp, .flagsChanged,
+            .leftMouseDown, .leftMouseUp,
+            .rightMouseDown, .rightMouseUp,
+            .otherMouseDown, .otherMouseUp,
+        ] {
+            eventMask |= (1 << type.rawValue)
+        }
 
         let userInfo = Unmanaged.passUnretained(self).toOpaque()
 
@@ -77,6 +83,19 @@ class KeyMonitor {
                     audioEngine.playSound(forKeyCode: keyCode, phase: .down)
                 }
             }
+
+        case .leftMouseDown:
+            if mouseEnabled { audioEngine.playSound(forName: "MouseLeft", phase: .down) }
+        case .leftMouseUp:
+            if mouseEnabled { audioEngine.playSound(forName: "MouseLeft", phase: .up) }
+        case .rightMouseDown:
+            if mouseEnabled { audioEngine.playSound(forName: "MouseRight", phase: .down) }
+        case .rightMouseUp:
+            if mouseEnabled { audioEngine.playSound(forName: "MouseRight", phase: .up) }
+        case .otherMouseDown:
+            if mouseEnabled { audioEngine.playSound(forName: "MouseMiddle", phase: .down) }
+        case .otherMouseUp:
+            if mouseEnabled { audioEngine.playSound(forName: "MouseMiddle", phase: .up) }
 
         case .tapDisabledByTimeout:
             if let tap = eventTap {

@@ -66,10 +66,14 @@ class AudioEngine {
 
     func playSound(forKeyCode keyCode: UInt16, phase: KeyPhase) {
         guard let keyName = KeyCodeMap.name(for: keyCode) else { return }
+        playSound(forName: keyName, phase: phase)
+    }
+
+    func playSound(forName name: String, phase: KeyPhase) {
         guard let file = audioFile else { return }
 
         let table = phase == .down ? SoundDefines.down : SoundDefines.up
-        guard let (startMs, durationMs) = table[keyName] else { return }
+        guard let (startMs, durationMs) = table[name] else { return }
 
         let startFrame = AVAudioFramePosition(Double(startMs) * sampleRate / 1000.0)
         let frameCount = AVAudioFrameCount(Double(durationMs) * sampleRate / 1000.0)

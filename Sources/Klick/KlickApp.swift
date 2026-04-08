@@ -11,6 +11,10 @@ struct KlickApp: App {
                 get: { appDelegate.isEnabled },
                 set: { appDelegate.setEnabled($0) }
             ))
+            Toggle("Mouse Sounds", isOn: Binding(
+                get: { appDelegate.mouseEnabled },
+                set: { appDelegate.setMouseEnabled($0) }
+            ))
             Divider()
             Button("Quit") {
                 NSApplication.shared.terminate(nil)
@@ -24,6 +28,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     private var keyMonitor: KeyMonitor?
     private var accessibilityTimer: Timer?
     var isEnabled = true
+    var mouseEnabled = true
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         NSApp.setActivationPolicy(.accessory)
@@ -53,6 +58,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         } else {
             keyMonitor?.stop()
         }
+    }
+
+    func setMouseEnabled(_ enabled: Bool) {
+        mouseEnabled = enabled
+        keyMonitor?.mouseEnabled = enabled
     }
 
     private func requestAccessibilityIfNeeded() {

@@ -87,6 +87,9 @@ enum SoundDefines {
         "ArrowDown": (37267, 94),
         "ArrowRight": (37586, 88),
         "AltRight": (35878, 90),
+        "MouseLeft": (39300, 150),
+        "MouseRight": (39300, 150),
+        "MouseMiddle": (39300, 150),
     ]
 
     static let up: [String: (Int, Int)] = [
@@ -175,5 +178,8 @@ enum SoundDefines {
         "ArrowDown": (37361, 76),
         "ArrowRight": (37674, 72),
         "AltRight": (35968, 74),
+        "MouseLeft": (39500, 150),
+        "MouseRight": (39500, 150),
+        "MouseMiddle": (39500, 150),
     ]
 }
