@@ -1,6 +1,6 @@
 # Klick
 
-A macOS menu bar app that plays mechanical keyboard sounds on every keypress.
+A macOS menu bar app that plays mechanical keyboard sounds on every keypress and mouse click.
 
 ![macOS](https://img.shields.io/badge/macOS-13%2B-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
@@ -8,8 +8,9 @@ A macOS menu bar app that plays mechanical keyboard sounds on every keypress.
 ## Features
 
 - Realistic mechanical keyboard sounds with unique down/up sounds per key
+- Mouse click sounds for left, right, and middle buttons
 - Runs silently in the menu bar
-- Toggle on/off from the menu bar
+- Independent toggles for keyboard and mouse sounds
 - Low-latency audio playback (~5ms) using AVAudioEngine
 - Lightweight — single audio sprite file, no external dependencies
 
@@ -30,9 +31,9 @@ swift build
 
 ## Permissions
 
-Klick requires **Accessibility** permission to listen for global keypresses.
+Klick requires **Accessibility** permission to listen for global keypresses and mouse clicks.
 
-On first launch, go to **System Settings > Privacy & Security > Accessibility** and enable Klick.
+On first launch, Klick will prompt you to grant access. Click **Open Settings** to go directly to **System Settings > Privacy & Security > Accessibility** and enable Klick.
 
 ## Building for distribution
 
@@ -48,7 +49,7 @@ SIGN_IDENTITY="Developer ID Application: Your Name (TEAMID)" ./scripts/bundle.sh
 
 ## How it works
 
-Klick uses a single audio sprite file containing individual mechanical key sounds. Each keypress triggers a slice of the audio at the correct offset using `AVAudioEngine` with a pool of 12 `AVAudioPlayerNode` instances for overlapping playback. Global key events are captured via a `CGEvent` tap.
+Klick uses a single audio sprite file containing individual mechanical key sounds and mouse click sounds. Each keypress or click triggers a slice of the audio at the correct offset using `AVAudioEngine` with a pool of 12 `AVAudioPlayerNode` instances for overlapping playback. Global key and mouse events are captured via a `CGEvent` tap.
 
 Sound definitions are ported from [klickboard](https://github.com/nicknisi/klickboard).
 
