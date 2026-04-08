@@ -22,6 +22,7 @@ struct KlickApp: App {
 class AppDelegate: NSObject, NSApplicationDelegate {
     private let audioEngine = AudioEngine()
     private var keyMonitor: KeyMonitor?
+    private var accessibilityTimer: Timer?
     var isEnabled = true
 
     func applicationDidFinishLaunching(_ notification: Notification) {
@@ -33,13 +34,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             return
         }
 
-        _ = KeyMonitor.checkAccessibility()
-
-        keyMonitor = KeyMonitor(audioEngine: audioEngine)
-        _ = keyMonitor!.start()
+        requestAccessibilityIfNeeded()
     }
 
     func applicationWillTerminate(_ notification: Notification) {
+        accessibilityTimer?.invalidate()
         keyMonitor?.stop()
         audioEngine.stop()
     }
@@ -54,5 +53,53 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         } else {
             keyMonitor?.stop()
         }
+    }
+
+    private func requestAccessibilityIfNeeded() {
+        if KeyMonitor.checkAccessibility() {
+            startKeyMonitor()
+            return
+        }
+
+        showAccessibilityAlert()
+        pollForAccessibility()
+    }
+
+    private func showAccessibilityAlert() {
+        // Briefly become a regular app so the alert can appear in front
+        NSApp.setActivationPolicy(.regular)
+
+        let alert = NSAlert()
+        alert.messageText = "Klick Needs Accessibility Access"
+        alert.informativeText = "Klick needs Accessibility permission to listen for keystrokes.\n\nClick \"Open Settings\" then add Klick to the Accessibility list and enable it."
+        alert.alertStyle = .warning
+        alert.addButton(withTitle: "Open Settings")
+        alert.addButton(withTitle: "Later")
+
+        let response = alert.runModal()
+
+        // Go back to accessory (menu bar only)
+        NSApp.setActivationPolicy(.accessory)
+
+        if response == .alertFirstButtonReturn {
+            let url = URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility")!
+            NSWorkspace.shared.open(url)
+        }
+    }
+
+    private func pollForAccessibility() {
+        accessibilityTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] timer in
+            if KeyMonitor.checkAccessibility() {
+                timer.invalidate()
+                self?.accessibilityTimer = nil
+                self?.startKeyMonitor()
+            }
+        }
+    }
+
+    private func startKeyMonitor() {
+        guard isEnabled else { return }
+        keyMonitor = KeyMonitor(audioEngine: audioEngine)
+        _ = keyMonitor?.start()
     }
 }

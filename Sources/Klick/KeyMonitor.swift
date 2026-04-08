@@ -13,7 +13,7 @@ class KeyMonitor {
     }
 
     static func checkAccessibility() -> Bool {
-        let options = [kAXTrustedCheckOptionPrompt.takeUnretainedValue(): true] as CFDictionary
+        let options = [kAXTrustedCheckOptionPrompt.takeUnretainedValue(): false] as CFDictionary
         return AXIsProcessTrustedWithOptions(options)
     }
 
