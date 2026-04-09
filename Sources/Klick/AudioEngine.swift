@@ -15,25 +15,7 @@ class AudioEngine {
     private let poolSize = 12
 
     private static func findSoundURL() -> URL? {
-        // 1. SPM resource bundle (swift build / development)
-        if let url = Bundle.module.url(forResource: "sound", withExtension: "caf") {
-            return url
-        }
-        // 2. Main bundle Resources/ (packaged .app)
-        if let url = Bundle.main.url(forResource: "sound", withExtension: "caf") {
-            return url
-        }
-        // 3. Look next to the executable
-        let execURL = Bundle.main.executableURL?.deletingLastPathComponent()
-        if let url = execURL?.appendingPathComponent("sound.caf"), FileManager.default.fileExists(atPath: url.path) {
-            return url
-        }
-        // 4. Look in ../Resources relative to executable
-        if let url = execURL?.deletingLastPathComponent().appendingPathComponent("Resources/sound.caf"),
-           FileManager.default.fileExists(atPath: url.path) {
-            return url
-        }
-        return nil
+        return Bundle.klickResources.url(forResource: "sound", withExtension: "caf")
     }
 
     func start() throws {

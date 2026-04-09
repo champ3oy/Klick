@@ -51,7 +51,9 @@ if [ ! -f "$SOUND_SOURCE" ]; then
 fi
 cp "$SOUND_SOURCE" "$APP_BUNDLE/Contents/Resources/sound.caf"
 
-# Copy SPM resource bundle if it exists
+# Copy SPM resource bundle into Contents/MacOS (alongside the executable)
+# Bundle.main.bundleURL resolves to the .app root, but for a relocatable fix
+# we override Bundle.module in the app code to look in Contents/Resources
 SPM_BUNDLE="$PROJECT_DIR/.build/release/Klick_Klick.bundle"
 if [ -d "$SPM_BUNDLE" ]; then
     cp -R "$SPM_BUNDLE" "$APP_BUNDLE/Contents/Resources/"
