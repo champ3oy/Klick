@@ -51,8 +51,6 @@ SIGN_IDENTITY="Developer ID Application: Your Name (TEAMID)" ./scripts/bundle.sh
 
 Klick uses a single audio sprite file containing individual mechanical key sounds and mouse click sounds. Each keypress or click triggers a slice of the audio at the correct offset using `AVAudioEngine` with a pool of 12 `AVAudioPlayerNode` instances for overlapping playback. Global key and mouse events are captured via a `CGEvent` tap.
 
-Sound definitions are ported from [klickboard](https://github.com/nicknisi/klickboard).
-
 ## License
 
 MIT
