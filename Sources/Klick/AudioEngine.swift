@@ -14,6 +14,23 @@ class AudioEngine {
     private var nodeIndex = 0
     private let poolSize = 12
 
+    /// Whether to auto-duck when other audio is playing
+    var smartVolume = false
+
+    /// Whether other audio is currently playing (set by SystemAudioMonitor)
+    var otherAudioPlaying = false {
+        didSet { applyVolume() }
+    }
+
+    private let normalVolume: Float = 0.5
+    private let duckedVolume: Float = 0.15
+
+    private func applyVolume() {
+        engine.mainMixerNode.outputVolume = (smartVolume && otherAudioPlaying)
+            ? duckedVolume
+            : normalVolume
+    }
+
     private static func findSoundURL() -> URL? {
         return Bundle.klickResources.url(forResource: "sound", withExtension: "caf")
     }
@@ -33,6 +50,7 @@ class AudioEngine {
         }
 
         try engine.start()
+        applyVolume()
 
         for node in playerNodes {
             node.play()

@@ -28,6 +28,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     private let audioEngine = AudioEngine()
     private var keyMonitor: KeyMonitor?
     private var accessibilityTimer: Timer?
+    private let systemAudioMonitor = SystemAudioMonitor()
+
     var isEnabled = true
     var mouseEnabled = true
 
@@ -36,17 +38,22 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
         try? SMAppService.mainApp.register()
 
+        audioEngine.smartVolume = true
+
         do {
             try audioEngine.start()
         } catch {
             return
         }
 
+        startAudioMonitor()
+
         requestAccessibilityIfNeeded()
     }
 
     func applicationWillTerminate(_ notification: Notification) {
         accessibilityTimer?.invalidate()
+        systemAudioMonitor.stop()
         keyMonitor?.stop()
         audioEngine.stop()
     }
@@ -66,6 +73,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     func setMouseEnabled(_ enabled: Bool) {
         mouseEnabled = enabled
         keyMonitor?.mouseEnabled = enabled
+    }
+
+    private func startAudioMonitor() {
+        systemAudioMonitor.onAudioStateChanged = { [weak self] isPlaying in
+            self?.audioEngine.otherAudioPlaying = isPlaying
+        }
+        systemAudioMonitor.start()
     }
 
     private func requestAccessibilityIfNeeded() {
