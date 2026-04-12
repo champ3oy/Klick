@@ -23,7 +23,7 @@ class AudioEngine {
     }
 
     private let normalVolume: Float = 0.5
-    private let duckedVolume: Float = 0.15
+    private let duckedVolume: Float = 0.25
 
     private func applyVolume() {
         engine.mainMixerNode.outputVolume = (smartVolume && otherAudioPlaying)
